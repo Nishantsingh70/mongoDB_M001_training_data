@@ -1,0 +1,353 @@
+Aggregation Framework lecture:
+
+Commands used in this lesson:
+
+Connect to the Atlas cluster:
+
+mongo "mongodb+srv://<username>:<password>@<cluster>.mongodb.net/admin"
+
+Switch to this database:
+
+use sample_airbnb
+
+Find all documents that have Wifi as one of the amenities. Only include price and address in the resulting cursor.
+
+db.listingsAndReviews.find({ "amenities": "Wifi" },
+                           { "price": 1, "address": 1, "_id": 0 }).pretty()
+
+Using the aggregation framework find all documents that have Wifi as one of the amenities``*. Only include* ``price and address in the resulting cursor.
+
+db.listingsAndReviews.aggregate([
+                                  { "$match": { "amenities": "Wifi" } },
+                                  { "$project": { "price": 1,
+                                                  "address": 1,
+                                                  "_id": 0 }}]).pretty()
+
+Find one document in the collection and only include the address field in the resulting cursor.
+
+db.listingsAndReviews.findOne({ },{ "address": 1, "_id": 0 })
+
+Project only the address field value for each document, then group all documents into one document per address.country value.
+
+db.listingsAndReviews.aggregate([ { "$project": { "address": 1, "_id": 0 }},
+                                  { "$group": { "_id": "$address.country" }}])
+
+Project only the address field value for each document, then group all documents into one document per address.country value, and count one for each document in each group.
+
+db.listingsAndReviews.aggregate([
+                                  { "$project": { "address": 1, "_id": 0 }},
+                                  { "$group": { "_id": "$address.country",
+                                                "count": { "$sum": 1 } } }
+                                ])
+
+
+================================================================================================================================================
+
+Chapter 5: Indexing and Aggregation Pipeline
+Lab: Aggregation Framework
+
+Problem:
+
+To complete this exercise connect to your Atlas cluster using the in-browser IDE space at the end of this chapter.
+
+What room types are present in the sample_airbnb.listingsAndReviews collection?
+
+Attempts Remaining:Correct Answer
+
+Check all answers that apply:
+Entire home/apt
+Apartment
+Private room
+Kitchen
+House
+Shared room
+Living Room
+
+Answer:
+
+    Shared room
+    Entire home/apt
+    Private room
+
+        These are correct.
+        To get this result you need to run the following query.
+
+Query: db.listingsAndReviews.aggregate([ { "$group": { "_id": "$room_type" } }])
+
+    Living Room
+    Kitchen
+    House
+    Apartment
+
+        These are incorrect.
+        Neither of these options is present in the "room_type" field in the listingsAndReviews collection.
+		
+======================================================================================================================================================
+
+Chapter 5: Indexing and Aggregation Pipeline
+Quiz: Aggregation Framework
+
+Problem:
+What are the differences between using aggregate() and find()?
+
+Attempts Remaining:Correct Answer
+
+Check all answers that apply:
+find() can do what the aggregate() can do and more.
+aggregate() allows us to compute and reshape data in the cursor.          (right)
+find() allows us to compute and reshape data in the cursor.
+aggregate() can do what find() can and more.		                      (right)
+
+=======================================================================================================================================================
+
+sort() and limit() lecture:
+
+Commands used in this lesson:
+
+Connect to the Atlas cluster:
+
+mongo "mongodb+srv://<username>:<password>@<cluster>.mongodb.net/admin"
+
+use sample_training
+
+db.zips.find().sort({ "pop": 1 }).limit(1)
+
+db.zips.find({ "pop": 0 }).count()
+
+db.zips.find().sort({ "pop": -1 }).limit(1)
+
+db.zips.find().sort({ "pop": -1 }).limit(10)
+
+db.zips.find().sort({ "pop": 1, "city": -1 })
+
+
+============================================================================================================================================================
+
+Chapter 5: Indexing and Aggregation Pipeline
+Quiz 1: sort() and limit()
+
+Problem:
+Which of the following commands will return the name and founding year for the 5 oldest companies in the sample_training.companies collection?
+
+Attempts Remaining:Correct Answer
+
+Check all answers that apply:
+
+db.companies.find({ "founded_year": { "$ne": null }},
+                  { "name": 1, "founded_year": 1 }
+                 ).limit(5).sort({ "founded_year": 1 })
+
+db.companies.find({ },{ "name": 1, "founded_year": 1 }
+                 ).sort({ "founded_year": 1 }).limit(5)            (right)
+
+db.companies.find({ "founded_year": { "$ne": null }},
+                  { "name": 1, "founded_year": 1 }
+                 ).sort({ "founded_year": 1 }).limit(5)
+
+db.companies.find({ "name": 1, "founded_year": 1 }
+                  ).sort({ "founded_year": 1 }).limit(5)           (right)
+				  
+Explain:
+
+db.companies.find({ "founded_year": { "$ne": null }},
+                  { "name": 1, "founded_year": 1 }
+                 ).sort({ "founded_year": 1 }).limit(5)
+
+This is correct.
+
+We first must filter out the documents where the founded year is not null, then project the fields that we are looking for, which is name, and founded_year in this case. 
+Then we sort the cursor in increasing order, so the first results will have the smallest value for the founded_year field. 
+Finally, we limit the results to our top 5 documents in the cursor, thus getting the 5 oldest companies in this collection.
+
+db.companies.find({ },{ "name": 1, "founded_year": 1 }
+                 ).sort({ "founded_year": 1 }).limit(5)
+
+This is incorrect.
+
+This command is missing the search criteria, which means that null values will be included. Excluding the null values isn't always necessary, 
+because it isn't best practice to store these types of values in MongoDB anyway. So there are lots of collections out there without null values.
+ However, this collection contains nulls, and we need to exclude them from our cursor, or else they'll be our smallest value when we sort.
+
+db.companies.find({ "founded_year": { "$ne": null }},
+                  { "name": 1, "founded_year": 1 }
+                 ).limit(5).sort({ "founded_year": 1 })
+
+This is correct.
+
+While the limit() and sort() methods are not listed in the correct order, MongoDB flips their order when executing the query, delivering the 
+results that the question prompt is looking for.
+
+db.companies.find({ "name": 1, "founded_year": 1 }
+                  ).sort({ "founded_year": 1 }).limit(5)
+
+This is incorrect.
+
+It looks like the query filter has the values that the projection part of the find() command should have, and there is no projection used 
+in this command. So this command will return all companies where the name is equal to 1 and the founded_year is also equal to 1, which unfortunately 
+misses the requirements of the question prompt.
+
+===========================================================================================================================================================
+
+Chapter 5: Indexing and Aggregation Pipeline
+Quiz 2: sort() and limit()
+
+Problem:
+
+To complete this exercise connect to your Atlas cluster using the in-browser IDE space at the end of this chapter.
+
+In what year was the youngest bike rider from the sample_training.trips collection born?
+
+Attempts Remaining:Correct Answer
+
+Choose the best answer:
+1999               (right)
+2000
+1998
+1885
+
+Explain:
+
+1999
+
+    This is correct.
+    To get this result you need to run the following query. The most important part is to first filter out all empty string values, 
+	in order to get actual year values. You don't have to use projection here, but we added it so that it is easier to see the answer.
+	The sort order should be in decreasing order because we're looking for the youngest person, therefore the highest year value. 
+	You don't have to add the limit() method to get this result, but we also added it to make it easier to immediately see the result.
+
+Query: db.trips.find({ "birth year": { "$ne":"" } },
+              { "birth year": 1 }).sort({ "birth year": -1 }).limit(1)
+
+1885
+
+    This is incorrect.
+    You may have gotten this result if you sorted in increasing order instead of decreasing order.
+
+    2000
+    1998
+
+    These options are incorrect,
+    but are close to the correct answer, so they may have made you double check your answer before submitting it.
+	
+================================================================================================================================================
+
+Introduction to Indexes lecture:
+
+Commands used in this lesson:
+
+mongo "mongodb+srv://<username>:<password>@<cluster>.mongodb.net/admin"
+
+use sample_training
+
+db.trips.find({ "birth year": 1989 })
+
+db.trips.find({ "start station id": 476 }).sort( { "birth year": 1 } )
+
+db.trips.createIndex({ "birth year": 1 })
+
+db.trips.createIndex({ "start station id": 1, "birth year": 1 })
+
+==================================================================================================================================================
+
+Chapter 5: Indexing and Aggregation Pipeline
+Quiz: Introduction to Indexes
+
+Problem:
+
+Jameela often queries the sample_training.routes collection by the src_airport field like this:
+
+db.routes.find({ "src_airport": "MUC" }).pretty()
+
+Which command will create an index that will support this query?
+
+Attempts Remaining:Correct Answer
+
+Choose the best answer:
+db.routes.makeIndex({ "src_airport": 1 })
+db.routes.generateIndex({ "src_airport": -1 })
+db.routes.addIndex({ "src_airport": 1 })
+db.routes.createIndex({ "src_airport": -1 })              (right)
+
+===================================================================================================================================================
+
+Chapter 5: Indexing and Aggregation Pipeline
+Quiz: Introduction to Data Modeling
+
+Problem:
+What is data modeling?
+
+Attempts Remaining:Correct Answer
+
+Choose the best answer:
+a way to show off your amazing data to everyone using graphs and illustrations
+a way to organize fields in a document to support your application performance and querying capabilities             (right)
+a way to build your application based on how your data is stored
+a way to decide whether to store your data in the cloud or locally	
+
+=======================================================================================================================================================
+
+Upsert - Update or insert ? lecture:
+
+Commands used in this lesson:
+
+db.iot.updateOne({ "sensor": r.sensor, "date": r.date,
+                   "valcount": { "$lt": 48 } },
+                         { "$push": { "readings": { "v": r.value, "t": r.time } },
+                        "$inc": { "valcount": 1, "total": r.value } },
+                 { "upsert": true })
+
+=======================================================================================================================================================
+
+Chapter 5: Indexing and Aggregation Pipeline
+Quiz: Upsert
+
+Problem:
+How does the upsert option work?
+
+Attempts Remaining:Incorrect Answer
+
+Check all answers that apply:
+
+i) By default upsert is set to false.                                                                                                                    (right)
+ii) When upsert is set to true and the query predicate returns an empty cursor, the update operation creates a new document using the directive from 
+the query predicate and the update predicate.                                                                                                            (right)
+iii) It is used with the update operator, and needs to have its value specified every time that the update operator is called.
+iv) When upsert is set to false and the query predicate returns an empty cursor then there will be no updated documents as a result of this operation.   (right)
+
+
+===========================================================================================================================================================
+
+Aggregation Framework
+
+1. Using the aggregation framework find all documents that have Wifi as one
+   of the amenities. Only include price and address in the resulting cursor.
+
+2. Which countries have listings in the sample_airbnb database?
+3. How many countries have listings in the sample_airbnb database?
+
+sort() and limit()
+
+1. Find the least populated ZIP code in the zips collection.
+2. Find the most populated ZIP code in the zips collection.
+3. Find the top ten most populated ZIP codes.
+4. Get results sorted in increasing order by population, and decreasing
+   order by city name.
+
+Introduction to Indexes
+
+Create two separate indxes to support the following queries:
+
+db.trips.find({"birth year": 1989})
+
+db.trips.find({"start station id": 476}).sort("birth year": 1)
+
+Aggregation Framework
+
+What room types are present in the sample_airbnb.listingsAndReviews
+collection?
+
+sort() and limit()
+
+In what year was the youngest bike rider from the sample_training.trips
+collection born?
+

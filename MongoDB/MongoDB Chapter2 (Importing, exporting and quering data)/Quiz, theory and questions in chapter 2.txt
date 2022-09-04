@@ -1,0 +1,174 @@
+Difference between BSON vs JSON?
+
+link: https://www.mongodb.com/json-and-bson
+
+========================================================
+
+
+Chapter 2: Importing, Exporting, and Querying Data
+Quiz: What is JSON?
+
+{"name" : "Devi", "age": 19, "major": "Computer Science"}
+
+    This is correct.
+    The document starts and ends with curly brackets, all field names are enclosed in quotes, all field:value pairs are separated by commas.
+
+["name" : "Devi", "age": 19, "major": "Computer Science"]
+
+    This is incorrect.
+    This document is using square brackets instead of curly braces.
+
+{name : "Devi", age: 19, major: "Computer Science"}
+
+    This is incorrect.
+    While some software may not throw an error, this is still not correct JSON because each field name should be in quotes.
+	
+=========================================================
+
+Chapter 2: Importing, Exporting, and Querying Data
+Quiz: JSON vs. BSON
+
+MongoDB stores data in BSON, and you can then view it JSON.
+
+BSON is faster to parse and lighter to store than JSON.
+
+JSON supports fewer data types than BSON.
+
+==========================================================
+
+Import and export JSON and BSON.
+
+mongodump --uri "mongodb+srv://<your username>:<your password>@<your cluster>.mongodb.net/sample_supplies"
+
+mongoexport --uri="mongodb+srv://<your username>:<your password>@<your cluster>.mongodb.net/sample_supplies" --collection=sales --out=sales.json
+
+mongorestore --uri "mongodb+srv://<your username>:<your password>@<your cluster>.mongodb.net/sample_supplies"  --drop dump
+
+mongoimport --uri="mongodb+srv://<your username>:<your password>@<your cluster>.mongodb.net/sample_supplies" --drop sales.json
+
+==========================================================
+
+Chapter 2: Importing, Exporting, and Querying Data
+Quiz: Import and Export
+
+mongoimport
+
+    This is correct.
+    mongoimport can import data from JSON, and other supported non BSON formats.
+
+mongodump
+
+    This is incorrect.
+    mongodump exports data in its raw BSON form.
+
+mongorestore
+
+    This is incorrect.
+    mongorestore imports data from a mongodump created BSON format.
+
+mongoexport
+
+    This is incorrect.
+    mongoexport does work with JSON, but it would export it, thus making a copy of the data outside of the Atlas cluster, rather than adding a collection to the Atlas cluster.
+
+=============================================================
+
+Namespace - The concatenation of the database name and collection name is called a namespace.
+
+We looked at the sample_training.zips collection and issued the following queries:
+
+    {"state": "NY"}
+    {"state": "NY", "city": "ALBANY"}
+
+
+
+==============================================================
+
+Chapter 2: Importing, Exporting, and Querying Data
+Quiz: Data Explorer
+
+Problem:
+
+In the sample_training.trips collection a person with birth year 1961 took a trip that started at "Howard St & Centre St". What was the end station name for that trip?
+
+Copy and paste your answer from the Atlas UI to the response text box. The station name should be in a single set double quotes, exactly as it is in the Data Explorer.
+
+Attempts Remaining:Correct Answer
+Enter answer here:
+
+"South End Ave & Liberty St"
+
+The query used to get this answer is:
+
+Query: {"start station name" : "Howard St & Centre St", "birth year" : 1961}
+
+After the query is issued using the FIND button only one document will be returned. You will find the answer by looking at the value of the "end station name" field.
+
+==================================================================
+
+Find Command lecture:
+
+In this lesson we used the following commands:
+
+Connect to the Atlas cluster:
+
+mongo "mongodb+srv://<username>:<password>@<cluster>.mongodb.net/admin"
+
+show dbs
+
+use sample_training
+
+show collections
+
+db.zips.find({"state": "NY"})
+
+it iterates through the cursor.
+
+db.zips.find({"state": "NY"}).count()
+
+db.zips.find({"state": "NY", "city": "ALBANY"})
+
+db.zips.find({"state": "NY", "city": "ALBANY"}).pretty()
+
+=====================================================================
+
+Chapter 2: Importing, Exporting, and Querying Data
+Quiz: Find Command
+
+Problem:
+What does it do in the mongo shell?
+
+Attempts Remaining:Correct Answer
+
+Choose the best answer:
+Warns about imminent termination
+Interferes with the task
+Iterates through the cursor results (right)
+it is not a mongo shell command
+
+=====================================================================
+
+Chapter 2: Importing, Exporting, and Querying Data
+Quiz: The mongo shell
+
+Problem:
+Which of the following statements are true about the mongo shell?
+
+Attempts Remaining:Correct Answer
+
+Check all answers that apply:
+mongo shell automatically returns an ordered list of results
+It allows you to interact with your MongoDB instance without using a Graphical User Interface (right)
+It is a fully functioning JavaScript interpreter (right)
+
+=====================================================================
+
+Using the sample_training.inspections collection find out how many inspections
+were conducted on Feb 20 2015.
+
+db.inspections.find({"date":"Feb 20 2015"}).pretty().count() => 320
+
+=========================================================================
+
+
+

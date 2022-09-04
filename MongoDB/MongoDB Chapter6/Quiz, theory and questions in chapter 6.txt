@@ -1,0 +1,48 @@
+Chapter 6: Next Steps
+Quiz: Atlas Features
+
+Problem:
+What actions are available to you via the Aggregation Builder in the Atlas Data Explorer?
+
+Attempts Remaining:Correct Answer
+
+Check all answers that apply:
+Export pipeline to a programming language.                                     (right)
+A preview of the data in the pipeline at each selected stage.                  (right)
+Syntax for each selected aggregation stage.                                    (right)
+An indication of which indexes are used by the pipeline.                       
+
+===============================================================================================================================================
+
+Chapter 6: Next Steps
+Quiz: Atlas Products
+
+Problem:
+What is MongoDB Charts?
+
+Attempts Remaining:Correct Answer
+
+Choose the best answer:
+A feature that displays performance data about your Atlas Cluster.
+A product that helps you build visualizations of the data stored in your Atlas Cluster.                             (right)
+An app that allows you to embed visualizations that are created in other applications into your website.
+
+================================================================================================================================================
+
+Chapter 6: Next Steps
+Quiz: Compass
+
+Problem:
+What is MongoDB Compass?
+
+Attempts Remaining:Correct Answer
+
+Choose the best answer:
+MongoDB's Graphical User Interface Product.                                                             (right)
+A type of map-based chart that is available with MongoDB Charts
+A term used to denote an object that stores geospatial coordinates in the collection.
+
+================================================================================================================================================
+
+
+

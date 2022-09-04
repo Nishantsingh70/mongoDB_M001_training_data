@@ -1,0 +1,445 @@
+Chapter 3: Creating and Manipulating Documents
+Quiz: ObjectId
+
+Problem:
+How does the value of _id get assigned to a document?
+
+Attempts Remaining:Correct Answer
+
+Check all answers that apply:
+When a document is inserted a random field is picked to serve as the _id field. 
+You can select a non ObjectId type value when inserting a new document, as long as that value is unique to this collection. (right)
+_id field values are sequential integer values. 
+It is automatically generated as an ObjectId type value. (right)
+
+================================================================
+
+Inserting New Documents - insert() and errors
+
+In this lesson we used the following commands:
+
+mongoimport --uri="mongodb+srv://<username>:<password>@<cluster>.mongodb.net/sample_supplies" sales.json
+
+Step one: Connect to the Atlas cluster
+
+mongo "mongodb+srv://<username>:<password>@<cluster>.mongodb.net/admin"
+
+Step two: navigate to the database that we need:
+
+use sample_training
+
+Step three, get a random document from the collection:
+
+db.inspections.findOne();
+
+Step four, copy this random document, and try to insert in into the collection:
+
+db.inspections.insert({
+      "_id" : ObjectId("56d61033a378eccde8a8354f"),
+      "id" : "10021-2015-ENFO",
+      "certificate_number" : 9278806,
+      "business_name" : "ATLIXCO DELI GROCERY INC.",
+      "date" : "Feb 20 2015",
+      "result" : "No Violation Issued",
+      "sector" : "Cigarette Retail Dealer - 127",
+      "address" : {
+              "city" : "RIDGEWOOD",
+              "zip" : 11385,
+              "street" : "MENAHAN ST",
+              "number" : 1712
+         }
+  })
+
+db.inspections.insert({
+      "id" : "10021-2015-ENFO",
+      "certificate_number" : 9278806,
+      "business_name" : "ATLIXCO DELI GROCERY INC.",
+      "date" : "Feb 20 2015",
+      "result" : "No Violation Issued",
+      "sector" : "Cigarette Retail Dealer - 127",
+      "address" : {
+              "city" : "RIDGEWOOD",
+              "zip" : 11385,
+              "street" : "MENAHAN ST",
+              "number" : 1712
+         }
+  })
+
+db.inspections.find({"id" : "10021-2015-ENFO", "certificate_number" : 9278806}).pretty()
+
+=====================================================================
+
+Chapter 3: Creating and Manipulating Documents
+Quiz: Insert Errors
+
+Problem:
+Select all true statements from the following list:
+
+Attempts Remaining:Correct Answer
+
+Check all answers that apply:
+If a document is inserted without a provided _id value, then the _id field and value will be automatically generated for the inserted document before insertion. (right)
+MongoDB can store duplicate documents in the same collection, as long as their _id values are different. (right)
+If a document is inserted without a provided _id value, then that document will fail to be inserted and cause a write error.
+MongoDB can always store duplicate documents in the same collection regardless of the _id value.
+There is no way to ensure that duplicate records are not stored in MongoDB.
+
+=======================================================================
+
+Inserting New Documents - insert() order
+
+In this lesson we used the following commands:
+
+Insert three test documents:
+
+db.inspections.insert([ { "test": 1 }, { "test": 2 }, { "test": 3 } ])
+
+Insert three test documents but specify the _id values:
+
+db.inspections.insert([{ "_id": 1, "test": 1 },{ "_id": 1, "test": 2 },
+                       { "_id": 3, "test": 3 }])
+
+Find the documents with _id: 1
+
+db.inspections.find({ "_id": 1 })
+
+Insert multiple documents specifying the _id values, and using the "ordered": false option.
+
+db.inspections.insert([{ "_id": 1, "test": 1 },{ "_id": 1, "test": 2 },
+                       { "_id": 3, "test": 3 }],{ "ordered": false })
+
+Insert multiple documents with _id: 1 with the default "ordered": true setting
+
+db.inspection.insert([{ "_id": 1, "test": 1 },{ "_id": 3, "test": 3 }])
+
+View collections in the active db
+
+show collections
+
+Switch the active db to training
+
+use training
+
+View all available databases
+
+show dbs
+
+======================================================================
+
+Chapter 3: Creating and Manipulating Documents
+Quiz: Insert Order
+
+Problem:
+Which of the following commands will successfully insert 3 new documents into an empty pets collection?
+
+Attempts Remaining:Correct Answer
+
+Check all answers that apply:
+
+db.pets.insert([{ "_id": 1, "pet": "cat" },
+                { "_id": 1, "pet": "dog" },
+                { "_id": 3, "pet": "fish" },
+                { "_id": 4, "pet": "snake" }], { "ordered": false })      (right)
+
+db.pets.insert([{ "_id": 1, "pet": "cat" },
+                { "_id": 1, "pet": "dog" },
+                { "_id": 3, "pet": "fish" },
+                { "_id": 4, "pet": "snake" }], { "ordered": true })
+
+db.pets.insert([{ "_id": 1, "pet": "cat" },
+                { "_id": 2, "pet": "dog" },
+                { "_id": 3, "pet": "fish" },
+                { "_id": 3, "pet": "snake" }])                            (right)
+
+db.pets.insert([{ "pet": "cat" }, { "pet": "dog" },
+                { "pet": "fish" }])                                       (right)
+
+==========================================================================
+
+Chapter 3: Creating and Manipulating Documents
+Quiz: Updating Documents
+
+Problem:
+
+MongoDB has a flexible data model, which means that you can have fields that contain documents, or arrays as their values.
+
+Select any invalid MongoDB documents from the given choices:
+
+Attempts Remaining:Correct Answer
+
+Check all answers that apply:
+
+{ "_id": 1,
+  "pet": "cat",
+  "attributes": [ { "coat": "fur",
+                    "type": "soft" },
+                  { "defense": "claws",
+                    "location": "paws",
+                    "nickname": "murder mittens" } ],
+  "name": "Furball" }
+
+{ "_id": 1,
+  "pet": "cat",
+  "fur": "soft",
+  "claws": "sharp",
+  "name": "Furball" }
+
+{ "_id": 1,
+  "pet": "cat",
+  "attributes": { "coat": "soft fur",
+                  "paws": "cute but deadly" },
+  "name": "Furball" }
+
+None of the above.                                        (right)
+
+==============================================================================
+
+Updating Documents - mongo shell
+
+Commands used in this lesson:
+
+Connect to your Atlas Cluster.
+
+mongo "mongodb+srv://<username>:<password>@<cluster>.mongodb.net/admin"
+
+Use the sample_training database as your database in the following commands.
+
+use sample_training
+
+Find all documents in the zips collection where the zip field is equal to "12434".
+
+db.zips.find({ "zip": "12534" }).pretty()
+
+Find all documents in the zips collection where the city field is equal to "HUDSON".
+
+db.zips.find({ "city": "HUDSON" }).pretty()
+
+Find how many documents in the zips collection have the city field equal to "HUDSON".
+
+db.zips.find({ "city": "HUDSON" }).count()
+
+Update all documents in the zips collection where the city field is equal to "HUDSON" by adding 10 to the current value of the "pop" field.
+
+db.zips.updateMany({ "city": "HUDSON" }, { "$inc": { "pop": 10 } })
+
+Update a single document in the zips collection where the zip field is equal to "12534" by setting the value of the "pop" field to 17630.
+
+db.zips.updateOne({ "zip": "12534" }, { "$set": { "pop": 17630 } })
+
+Update a single document in the zips collection where the zip field is equal to "12534" by setting the value of the "population" field to 17630.
+
+db.zips.updateOne({ "zip": "12534" }, { "$set": { "population": 17630 } })
+
+Find all documents in the grades collection where the student_id field is 151 , and the class_id field is 339.
+
+db.grades.find({ "student_id": 151, "class_id": 339 }).pretty()
+
+Find all documents in the grades collection where the student_id field is 250 , and the class_id field is 339.
+
+db.grades.find({ "student_id": 250, "class_id": 339 }).pretty()
+
+Update one document in the grades collection where the student_id is ``250`` *, and the class_id field is 339 , by adding a document element to the "scores" array.
+
+db.grades.updateOne({ "student_id": 250, "class_id": 339 },
+                    { "$push": { "scores": { "type": "extra credit",
+                                             "score": 100 }
+                                }
+                     })
+
+=============================================================================================
+
+Chapter 3: Creating and Manipulating Documents
+Quiz: Updating Documents in the shell
+
+Problem:
+
+Given a pets collection where each document has the following structure and fields:
+
+{
+ "_id": ObjectId("5ec414e5e722bb1f65a25451"),
+ "pet": "wolf",
+ "domestic?": false,
+ "diet": "carnivorous",
+ "climate": ["polar", "equatorial", "continental", "mountain"]
+}
+
+Which of the following commands will add new fields to the updated documents?
+
+Attempts Remaining:Correct Answer
+
+Check all answers that apply:
+
+db.pets.updateMany({ "pet": "cat" },
+                   { "$push": { "climate": "continental",
+                                "look": "adorable" } })                              (right)
+
+db.pets.updateMany({ "pet": "cat" },
+                   { "$set": { "type": "dangerous",
+                               "look": "adorable" }})                                (right)
+
+db.pets.updateMany({ "pet": "cat" },
+                   { "$set": { "climate": "continental" }})
+
+db.pets.updateMany({ "pet": "cat" },
+                   {"$set": { "domestic?": true, "diet": "mice" }})
+
+===============================================================================
+
+Deleting Documents and Collections
+
+Commands used in this lesson:
+
+mongo "mongodb+srv://<username>:<password>@<cluster>.mongodb.net/admin"
+
+use sample_training
+
+Look at all the docs that have test field equal to 1.
+
+db.inspections.find({ "test": 1 }).pretty()
+
+Look at all the docs that have test field equal to 3.
+
+db.inspections.find({ "test": 3 }).pretty()
+
+Delete all the documents that have test field equal to 1.
+
+db.inspections.deleteMany({ "test": 1 })
+
+Delete one document that has test field equal to 3.
+
+db.inspections.deleteOne({ "test": 3 })
+
+Inspect what is left of the inspection collection.
+
+db.inspection.find().pretty()
+
+View what collections are present in the sample_training collection.
+
+show collections
+
+Drop the inspection collection.
+
+db.inspection.drop()
+
+=================================================================
+
+Chapter 3: Creating and Manipulating Documents
+Quiz 1: Deleting Documents
+
+Problem:
+
+The sample dataset contains a few databases that we will not use in this course. Clean up your Atlas cluster and get rid of all the collections in these databases:
+
+    sample_analytics
+    sample_geospatial
+    sample_weatherdata
+
+Does removing all collections in a database also remove the database?
+
+Attempts Remaining:Correct Answer
+
+Choose the best answer:
+yes                                    (right)
+no
+
+===========================================================
+
+Chapter 3: Creating and Manipulating Documents
+Quiz 2: Deleting Documents
+
+Problem:
+Which of the following commands will delete a collection named villains?
+
+Attempts Remaining:Correct Answer
+
+Check all answers that apply:
+db.villains.drop()                          (right)
+db.villains.dropAll()
+db.villains.delete()
+
+=============================================================
+
+Practice Question:
+
+People often confuse NEW YORK City as the capital of New York state, when in
+reality the capital of New York state is ALBANY.
+
+In the sample_training.zips collection add a boolean field "capital?" to all
+documents pertaining to ALBANY NY, and NEW YORK, NY. The value of the field
+should be true for all ALBANY documents and false for all NEW YORK documents.
+
+db.zips.updateMany({"city":"ALBANY"}, {"$set": {"capitals": true}})
+
+db.zips.updateMany({"city":"NEW YORK"},{"$set": {"capitals": false}});
+
+
+=============================================================
+
+Inserting New Documents - insert() and errors:
+
+1. Get a random document from a collection
+2. Copy this random document, and insert it back to the collection. Do you get
+   a "Duplicate Key" error?
+3. Insert that document into the collection without the _id field to get a
+   successfull insert. Did it work?
+
+
+Inserting New Documents - insert() order:
+
+1. Insert three test documents into the inspections collection
+   db.inspections.insert([{"test":1},{"test":2},{"test":3}])
+2. Insert the same three documents into the inspections collection. Did it
+   work? Why?
+3. Insert these three test documents into the inspections collection. Did it
+   work? Why?
+   db.inspections.insert([{"_id": 1, "test": 1},{"_id": 1, "test": 2},{"_id": 3,"test": 3}])
+4. Try the same insert as above but make it unordered.
+5. Try this command. Did it work? Why?
+   db.inspection.insert([{ "_id":1, "test": 1 },{ "_id": 3,"test": 3 }])
+
+
+Updating Documents  - mongo shell
+
+1. Find all documents in the zips collection where the zip field is equal to
+   12434.
+2. Find all documents in the zips collection where the city field is equal to
+   "HUDSON".
+3. Find how many documents in the zips collection have the city field is equal
+   to "HUDSON".
+4. Update all documents in the zips collection where the city field is equal
+   to "HUDSON" by adding 10 to the current value of the "pop" field.
+5. Update a single document in the zips collection where the zip field is
+   equal to 12534 by setting the value of the "pop" field to 17630.
+6. Update a single document in the zips collection where the zip field is
+   equal to 12534 by setting the value of the "population" field to 17630.
+7. Find all documents in the grades collection where the student_id is 151,
+   and the class_id field is 339.
+8. Find all documents in the grades collection where the student_id is 250,
+   and the class_id field is 339.
+9. Update one document in the grades collection where the student_id is 250,
+   and the class_id field is 339, by adding a document element to the "scores"
+   array.
+
+Practice Question:
+
+People often confuse NEW YORK City as the capital of New York state, when in
+reality the capital of New York state is ALBANY.
+
+Add a boolean field "capital?" to all documents pertaining to ALBANY NY, and
+NEW YORK, NY. The value of the field should be true for all ALBANY documents
+and false for all NEW YORK documents.
+
+
+Deleting Documents and Collections
+
+1. Look at all the documents in the inspections collection that have test field
+   equal to 1.
+2. Look at all the documents in the inspections collection that have test field
+   equal to 3.
+3. Delete all the documents from the inspections collection that have test
+   field equal to 1
+4. Delete one document from the inspections collection that has test field
+   equal to 3
+5. Inspect what is left of the inspection collection.
+6. View what collections are present in the sample_training database.
+7. Drop the inspection collection
